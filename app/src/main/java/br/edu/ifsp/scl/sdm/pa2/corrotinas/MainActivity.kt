@@ -3,9 +3,7 @@ package br.edu.ifsp.scl.sdm.pa2.corrotinas
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import br.edu.ifsp.scl.sdm.pa2.corrotinas.databinding.ActivityMainBinding
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
@@ -24,12 +22,19 @@ class MainActivity : AppCompatActivity() {
                 texto2Tv.text = ""
                 texto3Tv.text = ""
 
-                GlobalScope.launch {
-                    val texto1 = buscaTexto1(random.nextLong(3000))
+                //corrotina 1
+                GlobalScope.launch (Dispatchers.IO) {
+                    val texto1Deferred: Deferred<String> = async {
+                        buscaTexto1(random.nextLong(3000))
+                    }
+                    val texto1 = texto1Deferred.await()
                     runOnUiThread {
                         texto1Tv.text = texto1
                     }
+                }
 
+                //corrotina 2
+                GlobalScope.launch (Dispatchers.IO) {
                     val texto2 = buscaTexto2(random.nextLong(3000))
                     runOnUiThread {
                         texto2Tv.text = texto2
